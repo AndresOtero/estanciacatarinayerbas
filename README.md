@@ -17,6 +17,16 @@ Sitio estatico (sin JavaScript) publicado con GitHub Pages.
    git add -A && git commit -m "Actualizar precios" && git push
    ```
 
+## Ver el sitio antes de publicarlo
+
+```bash
+python3 serve.py
+```
+
+Abri <http://localhost:8000>. La pagina se regenera en cada recarga, asi que
+podes editar `products.json` y refrescar el navegador para ver el cambio.
+`Ctrl+C` corta el servidor. Para usar otro puerto: `python3 serve.py 3000`.
+
 ## Agregar fotos
 
 Coloca las imagenes en `img/` con el nombre del producto en minusculas, sin
@@ -36,4 +46,5 @@ imagenes existentes y reemplaza el placeholder por la foto.
 - `products.json` — los datos (unico archivo que hace falta editar normalmente).
 - `template.html` — estructura y estilos de la pagina.
 - `build.py` — genera `index.html` combinando los dos anteriores.
+- `serve.py` — servidor local de previsualizacion.
 - `index.html` — **generado**, no editar a mano.

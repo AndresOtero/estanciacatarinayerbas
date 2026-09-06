@@ -23,6 +23,7 @@ on the next build.
 | `products.json` | The data. Usually the only file that needs editing. |
 | `template.html` | Page structure and CSS. Contains the `<!--CONTENIDO-->` placeholder. |
 | `build.py` | Renders `products.json` into `template.html`. |
+| `serve.py` | Local preview server. Rebuilds on each request. |
 | `index.html` | **Generated output.** Committed so Pages can serve it. |
 | `img/` | Product photos, optional. |
 
@@ -37,6 +38,19 @@ the standard library, so there is nothing to install.
 
 Always run the build after touching `products.json` or `template.html`, and
 commit the regenerated `index.html` in the same commit as the source change.
+
+## Previewing locally
+
+```bash
+python3 serve.py          # http://localhost:8000, or `python3 serve.py 3000`
+```
+
+It regenerates `index.html` on every page load, so editing `products.json` and
+refreshing is enough — no need to re-run `build.py` while it is running. Use it
+to check a change before pushing, since pushing to `main` publishes immediately.
+
+Note it still writes `index.html` to disk, so commit or discard that file
+deliberately after a preview session.
 
 ## Deploying
 
