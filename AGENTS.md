@@ -18,36 +18,49 @@ engines and link previews. Do not reintroduce client-side rendering.
 **`index.html` is generated. Never edit it by hand.** Any manual change is lost
 on the next build.
 
-| File | Role |
-| --- | --- |
-| `products.json` | The data. Usually the only file that needs editing. |
-| `template.html` | Page structure and CSS. Contains the `<!--CONTENIDO-->` placeholder. |
-| `build.py` | Renders `products.json` into `template.html`. |
-| `serve.py` | Local preview server. Rebuilds on each request. |
-| `index.html` | **Generated output.** Committed so Pages can serve it. |
-| `img/` | Product photos, optional. |
+## Layout
+
+```
+index.html            Generated output. Committed so Pages can serve it.
+img/                  Product photos, optional.
+data/products.json    The data. Usually the only file that needs editing.
+templates/template.html   Page structure and CSS. Has the <!--CONTENIDO--> placeholder.
+scripts/build.py      Renders the data into the template.
+scripts/serve.py      Local preview server. Rebuilds on each request.
+```
+
+`index.html` and `img/` sit at the repo root because GitHub Pages is configured
+to serve from the root of `main`. Everything else is source and can live in
+folders. Moving the published files into a subdirectory (e.g. `docs/`) would
+also require changing the Pages source in the repository settings — do not do
+it as a side effect of another change.
+
+Both scripts resolve paths from `Path(__file__).resolve().parent.parent`, so
+they work from any working directory. Nothing needs to be on `sys.path`.
 
 ## Build
 
 ```bash
-python3 build.py
+python3 scripts/build.py
 ```
 
 Python 3 only — **Node is not installed in this environment.** The script uses
 the standard library, so there is nothing to install.
 
-Always run the build after touching `products.json` or `template.html`, and
-commit the regenerated `index.html` in the same commit as the source change.
+Always run the build after touching `data/products.json` or
+`templates/template.html`, and commit the regenerated `index.html` in the same
+commit as the source change.
 
 ## Previewing locally
 
 ```bash
-python3 serve.py          # http://localhost:8000, or `python3 serve.py 3000`
+python3 scripts/serve.py          # http://localhost:8000, or `… serve.py 3000`
 ```
 
-It regenerates `index.html` on every page load, so editing `products.json` and
-refreshing is enough — no need to re-run `build.py` while it is running. Use it
-to check a change before pushing, since pushing to `main` publishes immediately.
+It serves the repository root and regenerates `index.html` on every page load,
+so editing `data/products.json` and refreshing is enough — no need to re-run
+`build.py` while it is running. Use it to check a change before pushing, since
+pushing to `main` publishes immediately.
 
 Note it still writes `index.html` to disk, so commit or discard that file
 deliberately after a preview session.
@@ -79,18 +92,25 @@ is just a matter of dropping files in and rebuilding.
 
 ## Brand grouping
 
-Brands come from the `MARCAS_CONOCIDAS` list in `build.py`. It is sorted
-longest-first on purpose, so `REI VERDE Premium 1kg` matches `REI VERDE` rather
-than a shorter prefix. A product whose brand is not in the list falls back to
-its first word, which is usually right but not always.
+Brands come from the `MARCAS_CONOCIDAS` list in `scripts/build.py`. The literal
+is kept alphabetical for maintenance, and sorted longest-first at import on
+purpose, so `REI VERDE Premium 1kg` matches `REI VERDE` rather than a shorter
+prefix. A product whose brand is not in the list falls back to its first word,
+which is usually right but not always.
 
 **When adding a product from a new multi-word brand, add that brand to the
 list** — otherwise it gets split into the wrong group.
+
+Within a brand, cards render in the order the products appear in
+`data/products.json`. The brand sections themselves are sorted alphabetically,
+ignoring accents.
 
 ## Conventions
 
 - All user-facing content is in **Spanish**. Keep copy, headings and commit
   messages consistent with what is already there.
-- Prices are integers in `products.json`; the build formats them with a `.`
+- Prices are integers in `data/products.json`; the build formats them with a `.`
   thousands separator (`10500` renders as `10.500`).
-- Keep the CSS in `template.html`. There is no separate stylesheet.
+- Keep the CSS in `templates/template.html`. There is no separate stylesheet.
+  The colour palette is defined once as custom properties in `:root`; reuse
+  those variables instead of hardcoding new hex values.

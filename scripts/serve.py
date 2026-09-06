@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Servidor local para previsualizar el sitio antes de publicarlo.
 
-Uso:  python3 serve.py [puerto]      (por defecto, 8000)
+Uso:  python3 scripts/serve.py [puerto]      (por defecto, 8000)
 
-Regenera index.html en cada carga de la pagina: edita products.json o
-template.html, refresca el navegador y ves el cambio. No hace falta
-ejecutar build.py a mano mientras el servidor esta corriendo.
+Sirve la raiz del repositorio y regenera index.html en cada carga de la
+pagina: edita data/products.json o templates/template.html, refresca el
+navegador y ves el cambio. No hace falta ejecutar build.py a mano
+mientras el servidor esta corriendo.
 """
 
 import contextlib
@@ -17,7 +18,9 @@ from pathlib import Path
 
 import build
 
-RAIZ = Path(__file__).parent
+# Se sirve la raiz del repositorio (donde build.py escribe index.html),
+# no el directorio scripts/ en el que vive este archivo.
+RAIZ = Path(__file__).resolve().parent.parent
 
 
 class Handler(SimpleHTTPRequestHandler):

@@ -2,13 +2,23 @@
 
 Sitio estatico (sin JavaScript) publicado con GitHub Pages.
 
+## Estructura
+
+```
+index.html      generado — lo publica GitHub Pages, no editar a mano
+img/            fotos de los productos
+data/           products.json — los datos
+templates/      template.html — estructura y estilos
+scripts/        build.py y serve.py
+```
+
 ## Actualizar precios o productos
 
-1. Edita `products.json`.
+1. Edita `data/products.json`.
 2. Regenera la pagina:
 
    ```bash
-   python3 build.py
+   python3 scripts/build.py
    ```
 
 3. Sube los cambios:
@@ -20,12 +30,12 @@ Sitio estatico (sin JavaScript) publicado con GitHub Pages.
 ## Ver el sitio antes de publicarlo
 
 ```bash
-python3 serve.py
+python3 scripts/serve.py
 ```
 
 Abri <http://localhost:8000>. La pagina se regenera en cada recarga, asi que
-podes editar `products.json` y refrescar el navegador para ver el cambio.
-`Ctrl+C` corta el servidor. Para usar otro puerto: `python3 serve.py 3000`.
+podes editar `data/products.json` y refrescar el navegador para ver el cambio.
+`Ctrl+C` corta el servidor. Para usar otro puerto: `python3 scripts/serve.py 3000`.
 
 ## Agregar fotos
 
@@ -38,13 +48,13 @@ tildes y con guiones. Formatos aceptados: `.jpg`, `.jpeg`, `.png`, `.webp`.
 | CANARIAS Té Verde y Jengibre 500g | `img/canarias-te-verde-y-jengibre-500g.jpg` |
 | REI VERDE Padrón Arg. 500g | `img/rei-verde-padron-arg-500g.jpg` |
 
-Despues de copiarlas, ejecuta `python3 build.py` otra vez: el script detecta las
-imagenes existentes y reemplaza el placeholder por la foto.
+Despues de copiarlas, ejecuta `python3 scripts/build.py` otra vez: el script
+detecta las imagenes existentes y reemplaza el placeholder por la foto.
 
 ## Archivos
 
-- `products.json` — los datos (unico archivo que hace falta editar normalmente).
-- `template.html` — estructura y estilos de la pagina.
-- `build.py` — genera `index.html` combinando los dos anteriores.
-- `serve.py` — servidor local de previsualizacion.
+- `data/products.json` — los datos (unico archivo que hace falta editar normalmente).
+- `templates/template.html` — estructura y estilos de la pagina.
+- `scripts/build.py` — genera `index.html` combinando los dos anteriores.
+- `scripts/serve.py` — servidor local de previsualizacion.
 - `index.html` — **generado**, no editar a mano.
