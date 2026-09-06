@@ -1,4 +1,4 @@
-# Nuestra Yerba — lista de precios
+# Estancia Catarina Yerbas — lista de precios
 
 Sitio estatico (sin JavaScript) publicado con GitHub Pages.
 
