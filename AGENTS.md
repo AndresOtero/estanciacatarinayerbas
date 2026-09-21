@@ -16,31 +16,13 @@ engines and link previews. Do not reintroduce client-side rendering. The stock
 filter pills are pure CSS (radio inputs plus `:has()` selectors in the
 template), and the brand index is generated at build time.
 
-## Who edits this
-
-Two people push to `main`: the owner, from a clone with this tooling, and a
-collaborator who edits directly in the GitHub web editor. Both workflows have
-to keep working, which is what the points below are about:
-
-- `data/products.json` is what gets edited in the browser. Keep it one
-  product per line, in the field order shown in the README, with no nesting
-  or tricks. Do not reformat it or change the schema without updating the
-  README in the same commit.
-- The README is the guide for editing from GitHub, in Spanish, step by step
-  and concrete. AGENTS.md is the developer doc.
-- The workflow in `.github/workflows/build.yml` is what makes web edits
-  publish. Do not remove it or make the build depend on anything that is not
-  available on a stock `ubuntu-latest` runner (no pip installs).
-- Before pushing, `git fetch` and check `origin/main`: the collaborator's
-  commits arrive at any time and are not announced.
-
 ## The one rule that matters
 
 **`index.html` is generated. Never edit it by hand.** Any manual change is lost
-on the next build. This includes edits made through the GitHub web editor: in
-September 2026 the page was rewritten by hand there, and the design had to be
-ported back into the template. If someone needs to change the page, change
-`data/products.json` or `templates/template.html` and rebuild.
+on the next build, including edits made through the GitHub web editor: the
+workflow described under [Deploying](#deploying) regenerates the file on every
+push. To change the page, change `data/products.json` or
+`templates/template.html` and rebuild.
 
 ## Layout
 
