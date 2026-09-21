@@ -131,48 +131,6 @@ seguir la regla de [Agregar una foto](#agregar-una-foto).
    git add -A && git commit -m "Actualizar productos" && git push
    ```
 
-## Cambiar el diseño (textos, enlaces, redes)
-
-Todo lo que no es un producto esta en `templates/template.html`: el titulo,
-el texto de arriba, el boton "Hacé tu pedido" y el pie con las redes. Se
-edita igual que el JSON, desde GitHub o desde tu computadora, y la pagina se
-regenera sola. Lo unico que no hay que tocar es la linea `<!--CONTENIDO-->`,
-que es donde se insertan los productos.
-
-Puntos utiles del archivo:
-
-- **Titulo y texto de arriba:** busca `<h1>Estancia Catarina</h1>` y el
-  parrafo `class="sub"` que le sigue.
-- **Boton "Hacé tu pedido":** busca `class="order-cta"`. El `href` es a donde
-  lleva. Para que abra un chat de WhatsApp: `href="https://wa.me/598XXXXXXXX"`
-  (codigo de pais mas numero, sin espacios ni signos).
-- **Redes del pie:** busca `class="social-row"`. Cada red es un `<a>` con un
-  icono adentro. Para agregar Facebook, pega esto despues del `</a>` de
-  Instagram, dentro del mismo `<div>`:
-
-  ```html
-  <a class="social-link facebook" href="https://www.facebook.com/TU-PAGINA" target="_blank" rel="noopener noreferrer" aria-label="Seguinos en Facebook">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M13.5 22v-8.2h2.8l.4-3.3h-3.2V8.4c0-.9.3-1.6 1.6-1.6h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.4H7.3v3.3h2.8V22h3.4z"/>
-    </svg>
-  </a>
-  ```
-
-  Y para WhatsApp:
-
-  ```html
-  <a class="social-link whatsapp" href="https://wa.me/598XXXXXXXX" target="_blank" rel="noopener noreferrer" aria-label="Escribinos por WhatsApp">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.2 15.3l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8zm-3 4.3c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4 2.5 1 3 .8 3.5.7.5 0 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.5-.3l-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.2.2-.3.2-.6.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.4 0-.5L10.9 8c-.2-.5-.4-.4-.6-.4H9z"/>
-    </svg>
-  </a>
-  ```
-
-  Las clases `facebook` y `whatsapp` le dan el color a cada icono; estan
-  definidas en la parte de estilos del mismo archivo, cerca de
-  `.social-link`. Para otra red, copia uno de esos bloques de estilo con otro
-  nombre y otro color.
-
 ## Ver el sitio antes de publicarlo
 
 ```bash
