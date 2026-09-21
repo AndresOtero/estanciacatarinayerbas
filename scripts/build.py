@@ -8,6 +8,10 @@ index.html en la raiz, que es de donde lo publica GitHub Pages.
 
 Las imagenes se buscan en img/<slug>.<jpg|jpeg|png|webp>. Si no existe
 ninguna, la tarjeta se genera directamente con el placeholder.
+
+Cada producto puede indicar "estado" (stock | sin-stock | pedido; por defecto
+stock) y "categoria" (por ejemplo "Accesorios"), que reemplaza a la marca
+como grupo y se muestra al final.
 """
 
 import html
@@ -31,6 +35,19 @@ IMG_DIR = RAIZ / "img"
 
 EXTENSIONES = (".jpg", ".jpeg", ".png", ".webp")
 MARCADOR_CONTENIDO = "<!--CONTENIDO-->"
+
+# Estado de stock -> (texto de la etiqueta, clase CSS extra). El estado por
+# defecto es "stock". Los filtros de la plantilla usan estas mismas claves en
+# el atributo data-estado, asi que no hay que renombrarlas a la ligera.
+ESTADOS = {
+    "stock": ("✅ En stock", ""),
+    "sin-stock": ("❌ Sin stock", "sin-stock"),
+    "pedido": ("🕒 A pedido", "pedido"),
+}
+ESTADO_POR_DEFECTO = "stock"
+
+# Grupos que van al final, despues de las marcas, en este orden.
+GRUPOS_FINALES = ["Accesorios"]
 
 # Marcas cuyo nombre no coincide con la primera palabra del producto, o que
 # tienen mas de una palabra. Se listan alfabeticamente para mantenerlas y se
@@ -100,12 +117,37 @@ def buscar_imagen(nombre_slug):
     return None
 
 
-def agrupar_por_marca(productos):
-    """{marca: [producto, ...]}, conservando el orden de products.json."""
+def obtener_estado(producto):
+    """Clave de ESTADOS del producto; falla con un mensaje claro si es invalida."""
+    estado = producto.get("estado", ESTADO_POR_DEFECTO)
+    if estado not in ESTADOS:
+        validos = ", ".join(ESTADOS)
+        raise ValueError(
+            f'"{producto["nombre"]}": estado "{estado}" no valido (usar {validos})'
+        )
+    return estado
+
+
+def obtener_grupo(producto):
+    """La categoria explicita si la hay; si no, la marca."""
+    return producto.get("categoria") or obtener_marca(producto["nombre"])
+
+
+def agrupar(productos):
+    """{grupo: [producto, ...]}, conservando el orden de products.json."""
     agrupados = {}
     for producto in productos:
-        agrupados.setdefault(obtener_marca(producto["nombre"]), []).append(producto)
+        agrupados.setdefault(obtener_grupo(producto), []).append(producto)
     return agrupados
+
+
+def ordenar_grupos(agrupados):
+    """Marcas alfabeticamente (sin tildes) y GRUPOS_FINALES al final."""
+    marcas = sorted(
+        (g for g in agrupados if g not in GRUPOS_FINALES),
+        key=lambda g: sin_tildes(g).upper(),
+    )
+    return marcas + [g for g in GRUPOS_FINALES if g in agrupados]
 
 
 # ---------------------------------------------------------------------------
@@ -117,37 +159,67 @@ def tarjeta(producto):
     nombre = producto["nombre"]
     nombre_esc = html.escape(nombre)
     ruta = buscar_imagen(slug(nombre))
+    estado = obtener_estado(producto)
+    texto_estado, clase_estado = ESTADOS[estado]
+    clase_extra = f" {clase_estado}" if clase_estado else ""
 
     if ruta:
         medio = (
-            f'<img src="{html.escape(ruta)}" alt="{nombre_esc}" '
-            f'width="400" height="400" loading="lazy" decoding="async" />'
+            f'<img src="{html.escape(ruta)}" alt="Foto de {nombre_esc}" '
+            f'width="150" height="150" loading="lazy" decoding="async" />'
         )
     else:
-        medio = f'<div class="no-img">📷 {nombre_esc}</div>'
+        medio = '<div class="no-photo" aria-hidden="true">🧉</div>'
 
-    return f"""                <article class="product-card">
-                    <div class="product-image">{medio}</div>
+    return f"""            <article class="product-card{clase_extra}" data-estado="{estado}">
+                <span class="stock-badge{clase_extra}">{texto_estado}</span>
+                <div class="product-image-wrap">{medio}</div>
+                <div class="product-info">
                     <h3 class="product-name">{nombre_esc}</h3>
                     <p class="product-price">{formato_precio(producto["precio"])}</p>
                     <p class="product-weight">{html.escape(producto["peso"])}</p>
-                </article>"""
+                </div>
+            </article>"""
 
 
-def seccion(marca, productos):
+def plural(n, singular="producto"):
+    return f"{n} {singular}" if n == 1 else f"{n} {singular}s"
+
+
+def seccion(grupo, productos):
     tarjetas = "\n".join(tarjeta(p) for p in productos)
-    return f"""    <section class="brand-section" id="{slug(marca)}">
-        <h2 class="brand-title">{html.escape(marca)}</h2>
+    return f"""    <section class="brand-section" id="{slug(grupo)}">
+        <div class="brand-header">
+            <h2 class="brand-title">{html.escape(grupo)}</h2>
+            <span class="brand-count">{plural(len(productos))}</span>
+        </div>
         <div class="product-grid">
 {tarjetas}
         </div>
     </section>"""
 
 
+def enlace_nav(grupo, productos):
+    """Enlace del indice. data-estados permite ocultarlo cuando se filtra."""
+    estados = " ".join(sorted({obtener_estado(p) for p in productos}))
+    return (
+        f'    <a href="#{slug(grupo)}" data-estados="{estados}">'
+        f"{html.escape(grupo)}</a>"
+    )
+
+
 def render(agrupados, plantilla):
-    """Reemplaza el marcador de la plantilla por las secciones de marca."""
-    marcas = sorted(agrupados, key=lambda m: sin_tildes(m).upper())
-    contenido = "\n\n".join(seccion(m, agrupados[m]) for m in marcas)
+    """Reemplaza el marcador de la plantilla por el indice y las secciones."""
+    grupos = ordenar_grupos(agrupados)
+    nav = "\n".join(enlace_nav(g, agrupados[g]) for g in grupos)
+    secciones = "\n\n".join(seccion(g, agrupados[g]) for g in grupos)
+    contenido = f"""<nav class="brand-nav" aria-label="Marcas">
+{nav}
+</nav>
+
+<main class="contenido">
+{secciones}
+</main>"""
     return plantilla.replace(MARCADOR_CONTENIDO, contenido)
 
 
@@ -158,12 +230,12 @@ def render(agrupados, plantilla):
 
 def main():
     productos = json.loads(PRODUCTOS_JSON.read_text(encoding="utf-8"))
-    agrupados = agrupar_por_marca(productos)
+    agrupados = agrupar(productos)
     plantilla = PLANTILLA_HTML.read_text(encoding="utf-8")
     SALIDA_HTML.write_text(render(agrupados, plantilla), encoding="utf-8")
 
     con_img = sum(1 for p in productos if buscar_imagen(slug(p["nombre"])))
-    print(f"index.html generado: {len(productos)} productos, {len(agrupados)} marcas.")
+    print(f"index.html generado: {len(productos)} productos, {len(agrupados)} grupos.")
     print(f"Imagenes encontradas: {con_img}/{len(productos)}")
 
 
