@@ -1,7 +1,8 @@
 # AGENTS.md
 
 Guidance for coding agents working in this repository.
-Claude Code users: see [CLAUDE.md](CLAUDE.md) for the short version.
+Claude Code users: see [CLAUDE.md](CLAUDE.md) for the short version; Gemini
+CLI users: [GEMINI.md](GEMINI.md) has the same content.
 
 ## What this is
 
