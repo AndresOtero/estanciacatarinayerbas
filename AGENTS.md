@@ -19,15 +19,15 @@ template), and the brand index is generated at build time.
 ## Who edits this
 
 Two people push to `main`: the owner, from a clone with this tooling, and a
-non-technical collaborator who works only in the GitHub web editor and does
-not run anything locally. Everything below follows from that:
+collaborator who edits directly in the GitHub web editor. Both workflows have
+to keep working, which is what the points below are about:
 
-- `data/products.json` is the interface for the collaborator. Keep it one
+- `data/products.json` is what gets edited in the browser. Keep it one
   product per line, in the field order shown in the README, with no nesting
   or tricks. Do not reformat it or change the schema without updating the
   README in the same commit.
-- The README is written in Spanish for that collaborator, not for developers.
-  Keep it step by step and concrete. AGENTS.md is the developer doc.
+- The README is the guide for editing from GitHub, in Spanish, step by step
+  and concrete. AGENTS.md is the developer doc.
 - The workflow in `.github/workflows/build.yml` is what makes web edits
   publish. Do not remove it or make the build depend on anything that is not
   available on a stock `ubuntu-latest` runner (no pip installs).
