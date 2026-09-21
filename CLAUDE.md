@@ -16,3 +16,6 @@ See [AGENTS.md](AGENTS.md) for the full guidance. The essentials:
 - Pushing to `main` deploys to GitHub Pages. A workflow regenerates
   `index.html` on every push and commits it if it differs.
 - Site content is in Spanish.
+- A non-technical collaborator edits `data/products.json` from the GitHub web
+  editor. Keep that file one product per line, and keep the README in plain
+  Spanish for them. Fetch before pushing: their commits arrive unannounced.

@@ -16,6 +16,24 @@ engines and link previews. Do not reintroduce client-side rendering. The stock
 filter pills are pure CSS (radio inputs plus `:has()` selectors in the
 template), and the brand index is generated at build time.
 
+## Who edits this
+
+Two people push to `main`: the owner, from a clone with this tooling, and a
+non-technical collaborator who works only in the GitHub web editor and does
+not run anything locally. Everything below follows from that:
+
+- `data/products.json` is the interface for the collaborator. Keep it one
+  product per line, in the field order shown in the README, with no nesting
+  or tricks. Do not reformat it or change the schema without updating the
+  README in the same commit.
+- The README is written in Spanish for that collaborator, not for developers.
+  Keep it step by step and concrete. AGENTS.md is the developer doc.
+- The workflow in `.github/workflows/build.yml` is what makes web edits
+  publish. Do not remove it or make the build depend on anything that is not
+  available on a stock `ubuntu-latest` runner (no pip installs).
+- Before pushing, `git fetch` and check `origin/main`: the collaborator's
+  commits arrive at any time and are not announced.
+
 ## The one rule that matters
 
 **`index.html` is generated. Never edit it by hand.** Any manual change is lost
