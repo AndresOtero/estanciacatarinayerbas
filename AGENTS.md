@@ -6,8 +6,9 @@ Claude Code users: see [CLAUDE.md](CLAUDE.md) for the short version.
 ## What this is
 
 A static price list for Estancia Catarina Yerbas — yerba mate products grouped
-by brand. Published with GitHub Pages at
-<https://andresotero.github.io/estanciacatarinayerbas/>.
+by brand. Published with GitHub Pages at <https://estanciacatarina.com> (custom domain
+registered at Cloudflare; the GitHub-provided URL
+<https://andresotero.github.io/estanciacatarinayerbas/> redirects there).
 
 No framework, no bundler, no dependencies. The site is plain HTML and CSS with
 **zero JavaScript** — that is deliberate, so the products are visible to search
@@ -22,6 +23,7 @@ on the next build.
 
 ```
 index.html            Generated output. Committed so Pages can serve it.
+CNAME                 Custom domain for GitHub Pages. Do not delete or rename.
 img/                  Product photos, optional.
 data/products.json    The data. Usually the only file that needs editing.
 templates/template.html   Page structure and CSS. Has the <!--CONTENIDO--> placeholder.
@@ -71,8 +73,12 @@ GitHub Pages builds from the `main` branch, root directory. Pushing to `main`
 publishes; there is no CI workflow and no build step on GitHub's side. Allow a
 minute or so for the Pages build.
 
-If a custom domain is configured later, GitHub adds a `CNAME` file at the repo
-root. `build.py` does not touch it — leave it in place.
+The custom domain lives in the `CNAME` file at the repo root (one line,
+`estanciacatarina.com`). GitHub Pages reads it on every deploy, so deleting it
+would drop the domain. `build.py` does not touch it. DNS is managed in the
+Cloudflare dashboard: A records for the apex pointing at GitHub Pages' IPs and
+a `www` CNAME to `andresotero.github.io`, with the Cloudflare proxy off (DNS
+only) so GitHub can issue the HTTPS certificate.
 
 ## Product images
 

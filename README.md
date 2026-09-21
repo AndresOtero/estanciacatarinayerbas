@@ -1,11 +1,13 @@
 # Estancia Catarina Yerbas — lista de precios
 
-Sitio estatico (sin JavaScript) publicado con GitHub Pages.
+Sitio estatico (sin JavaScript) publicado con GitHub Pages en
+<https://estanciacatarina.com>.
 
 ## Estructura
 
 ```
 index.html      generado — lo publica GitHub Pages, no editar a mano
+CNAME           dominio personalizado (estanciacatarina.com), no borrar
 img/            fotos de los productos
 data/           products.json — los datos
 templates/      template.html — estructura y estilos
