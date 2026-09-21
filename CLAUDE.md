@@ -13,5 +13,6 @@ See [AGENTS.md](AGENTS.md) for the full guidance. The essentials:
 - The page ships **no JavaScript** by design. Keep it that way.
 - `index.html` and `img/` must stay at the repo root — GitHub Pages serves from
   the root of `main`.
-- Pushing to `main` deploys to GitHub Pages.
+- Pushing to `main` deploys to GitHub Pages. A workflow regenerates
+  `index.html` on every push and commits it if it differs.
 - Site content is in Spanish.

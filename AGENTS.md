@@ -28,6 +28,7 @@ ported back into the template. If someone needs to change the page, change
 
 ```
 index.html            Generated output. Committed so Pages can serve it.
+.github/workflows/    build.yml regenerates index.html on every push to main.
 CNAME                 Custom domain for GitHub Pages. Do not delete or rename.
 img/                  Product photos (optional), plus logo.png and favicon.png.
 data/products.json    The data. Usually the only file that needs editing.
@@ -74,9 +75,22 @@ deliberately after a preview session.
 
 ## Deploying
 
-GitHub Pages builds from the `main` branch, root directory. Pushing to `main`
-publishes; there is no CI workflow and no build step on GitHub's side. Allow a
-minute or so for the Pages build.
+GitHub Pages serves the `main` branch, root directory. Pushing to `main`
+publishes. Allow a minute or so for the Pages build.
+
+`.github/workflows/build.yml` runs `scripts/build.py` on every push to `main`
+and, if the generated `index.html` differs from the committed one, commits it
+as `github-actions[bot]` and requests a Pages build. Consequences:
+
+- Editing `data/products.json` or `templates/template.html` on GitHub is
+  enough to update the site; nobody has to run the build locally.
+- A hand edit to `index.html` is overwritten by the next run. This is
+  intentional.
+- Still run `build.py` locally and commit `index.html` with your change when
+  working from a clone: it keeps the history clean and lets you preview.
+- The bot's commit uses `GITHUB_TOKEN`, which does not trigger workflows (so
+  no loop) and does not trigger the Pages deployment either, which is why the
+  workflow calls the Pages build API explicitly.
 
 The custom domain lives in the `CNAME` file at the repo root (one line,
 `estanciacatarina.com`). GitHub Pages reads it on every deploy, so deleting it
@@ -84,26 +98,6 @@ would drop the domain. `build.py` does not touch it. DNS is managed in the
 Cloudflare dashboard: A records for the apex pointing at GitHub Pages' IPs and
 a `www` CNAME to `andresotero.github.io`, with the Cloudflare proxy off (DNS
 only) so GitHub can issue the HTTPS certificate.
-
-## Product images
-
-Photos are shown in a 150 px box with `object-fit: contain`, so keep them
-small (about 500 px on the long side, under 50 KB). Do not embed images as
-base64 in the page; put files in `img/` instead.
-
-`build.py` looks for `img/<slug>.<ext>` where `ext` is `.jpg`, `.jpeg`, `.png`
-or `.webp`. The slug is the product name lowercased, with accents stripped and
-every run of non-alphanumeric characters replaced by a hyphen:
-
-| Product | Expected file |
-| --- | --- |
-| `BALDO UY 1kg` | `img/baldo-uy-1kg.jpg` |
-| `CANARIAS Té Verde y Jengibre 500g` | `img/canarias-te-verde-y-jengibre-500g.jpg` |
-| `REI VERDE Padrón Arg. 500g` | `img/rei-verde-padron-arg-500g.jpg` |
-
-Detection happens at build time. When no file matches, the card renders a
-placeholder instead — so there is never a broken-image icon, and adding photos
-is just a matter of dropping files in and rebuilding.
 
 ## Product fields
 

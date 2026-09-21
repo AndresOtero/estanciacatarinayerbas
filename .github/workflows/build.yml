@@ -1,0 +1,57 @@
+# Regenera index.html en GitHub con cada push a main.
+#
+# Asi cualquiera puede editar data/products.json (o la plantilla) desde el
+# navegador y el sitio se actualiza solo, sin correr build.py a mano. Si
+# alguien edita index.html directamente, este workflow lo vuelve a generar
+# desde los datos, asi que esa edicion se pierde: hay que tocar el JSON.
+#
+# El commit del bot se hace con el GITHUB_TOKEN, que no dispara workflows
+# (no hay bucle) pero tampoco dispara la publicacion de Pages, por eso el
+# ultimo paso la pide explicitamente.
+
+name: Generar index.html
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: generar-index
+  cancel-in-progress: false
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Regenerar index.html
+        run: python3 scripts/build.py
+
+      - name: Commitear si cambio
+        id: commit
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "index.html ya estaba al dia."
+            echo "cambio=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Regenerar index.html"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo "cambio=true" >> "$GITHUB_OUTPUT"
+
+      - name: Pedir a GitHub Pages que publique
+        if: steps.commit.outputs.cambio == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
